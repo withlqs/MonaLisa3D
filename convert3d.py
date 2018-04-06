@@ -44,31 +44,46 @@ def output_3d(left, right):
     return cv2.merge([rights[0], rights[1], lefts[2]])
 
 
-def reshape(img1, img2):
+def reshape(img1, img2, offset1, offset2):
     h1 = img1.shape[0]
     h2 = img2.shape[0]
     w1 = img1.shape[1]
     w2 = img2.shape[1]
-    ratio = w2 / h2
-    w2new = 0
-    h2new = 0
-    if h1 * w2 > h2 * w1:
-        h2new = h1
-        w2new = int(h2new * ratio)
+    if h1 != h2:
+        raise Exception('Height is not equal.')
+
+    if offset1 != 0 and offset2 != 0:
+        raise Exception('Offset are all zeros.')
+
+    if offset2 != 0:
+        img1 = img1[0:h1, offset2:min(img1.shape[1], offset2 + img2.shape[1])]
+        img2 = img2[0:h2, :img1.shape[1]]
     else:
-        w2new = w1
-        h2new = int(w2new / ratio)
-    print('small is %dx%d' % (h1, w1))
-    print('resize to %dx%d' % (h2new, w2new))
-    img_resize = cv2.resize(img2, (w2new, h2new))
-    return img1, img_resize[0:h1, 0:w1]
+        img2 = img2[0:h2, offset1:min(img2.shape[1], offset1 + img1.shape[1])]
+        img1 = img1[0:h1, :img2.shape[1]]
+
+    # ratio = w2 / h2
+    # w2new = 0
+    # h2new = 0
+    # if h1 * w2 > h2 * w1:
+    #     h2new = h1
+    #     w2new = int(h2new * ratio)
+    # else:
+    #     w2new = w1
+    #     h2new = int(w2new / ratio)
+    # print('small is %dx%d' % (h1, w1))
+    # print('resize to %dx%d' % (h2new, w2new))
+    # img_resize = cv2.resize(img2, (w2new, h2new))
+    return img1, img2
 
 
 def main():
-    left = cv2.imread('left.jpg', cv2.IMREAD_COLOR)
-    right = cv2.imread('right.jpg', cv2.IMREAD_COLOR)
-    left_new, right_new = reshape(left, right)
-    show(output_3d(left_new, right_new))
+    left = cv2.imread('stylized_left.jpg', cv2.IMREAD_COLOR)
+    right = cv2.imread('stylized_right.jpg', cv2.IMREAD_COLOR)
+    left_new, right_new = reshape(right, left, 0, 0)
+    img_3d = output_3d(left_new, right_new)
+    cv2.imwrite('monalisa_3d.jpg', img_3d)
+    show(img_3d)
     pass
 
 
