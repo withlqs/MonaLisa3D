@@ -80,7 +80,7 @@ def reshape(img1, img2, offset1, offset2):
 def main():
     left = cv2.imread('stylized_left.jpg', cv2.IMREAD_COLOR)
     right = cv2.imread('stylized_right.jpg', cv2.IMREAD_COLOR)
-    left_new, right_new = reshape(right, left, 0, 0)
+    left_new, right_new = reshape(right, left, 60, 0)
     img_3d = output_3d(left_new, right_new)
     cv2.imwrite('monalisa_3d.jpg', img_3d)
     show(img_3d)
